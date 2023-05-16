@@ -65,4 +65,17 @@ export class EmployeeStorageGateway implements EmployeeRepository {
             } as ResponseApi<Employee>;
         }).catch(() => this.getError());
     }
+    async deleteEmployee(payload: number): Promise<ResponseApi<Employee>> {
+        return await fetch(`http://localhost:3000/employees/${payload}`,{
+            method: 'DELETE'
+        }).then(data => data.json())
+        .then(({entity}) => {
+            return {
+                code: 200,
+                error: false,
+                message: 'OK',
+                entity: entity
+            } as ResponseApi<Employee>;
+        }).catch(() => this.getError());
+    }
 }

@@ -8,4 +8,5 @@ export interface EmployeeRepository {
     findEmployee(payload: number): Promise<ResponseApi<Employee>>;
     saveEmployee(payload: SaveEmployeeDto): Promise<ResponseApi<Employee>>;
     updateEmployee(payload: UpdateEmployeeDto): Promise<ResponseApi<Employee>>;
+    deleteEmployee(payload: number): Promise<ResponseApi<Employee>>;
 }

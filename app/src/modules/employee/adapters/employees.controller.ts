@@ -8,6 +8,7 @@ import { SaveEmployeeDto } from "./dto/save-employee";
 import { GetEmployeeInteractor } from "../use-cases/get-employee.interactor";
 import { UpdateEmployeeDto } from "./dto/update-employee";
 import { UpdateEmployeeInteractor } from "../use-cases/update-employee.interactor";
+import { DeleteEmployeeInteractor } from "../use-cases/delete-employee.interactor";
 
 export class EmployeeController {
     findAllEmployees(){
@@ -55,6 +56,20 @@ export class EmployeeController {
     update(payload: UpdateEmployeeDto) {
         const repo: EmployeeRepository = new EmployeeStorageGateway();
         const interactor: UpdateEmployeeInteractor = new UpdateEmployeeInteractor(repo);
+
+        try {
+            return interactor.execute(payload);
+        } catch(err) {
+            return {
+                code: 500,
+                message: 'INTERNAL ERROR IN CONTROLLER'
+            } as ResponseApi<Employee>;
+        }
+    }
+
+    deleteEmployee(payload: number){
+        const repo: EmployeeRepository = new EmployeeStorageGateway();
+        const interactor: DeleteEmployeeInteractor = new DeleteEmployeeInteractor(repo);
 
         try {
             return interactor.execute(payload);
