@@ -72,9 +72,10 @@ export default Vue.extend({
 
                 await employeeController.save(employee)
             }
-
+            
             this.close()
             this.$emit("findAll");
+            
         },
         handleFileUpload() {
 
@@ -104,7 +105,6 @@ export default Vue.extend({
                 console.table(JsonData)
                 this.excelData = JsonData
             })
-
         }
     },
 });

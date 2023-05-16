@@ -18,7 +18,7 @@
                             </div>
                             <div class="col-md-3">
                                 <section class="text-center">
-                                    <button class="btn btn-danger m-1">PDF</button>
+                                    <button class="btn btn-danger m-1" @click="generatePdf">PDF</button>
                                 </section>
                             </div>
                             <div class="col-md-3">
@@ -67,6 +67,10 @@ import DeleteEmployeeModal from './DeleteEmployee.modal.vue';
 import ImportExcelModal from './ImportExcel.modal.vue';
 import { EmployeeController } from '../employees.controller';
 import { Employee } from '../../entities/employee';
+import pdfMake from 'pdfmake/build/pdfmake.js';
+import pdfFonts from 'pdfmake/build/vfs_fonts.js';
+import { SaveEmployeeDto } from '../dto/save-employee';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export default Vue.extend({
     name: 'EmployeesView',
@@ -84,7 +88,8 @@ export default Vue.extend({
             ],
             employees: [] as Employee[],
             employee: {} as Employee,
-            currentPageMain: 1
+            currentPageMain: 1,
+            document: null as any
         }
     },
     methods: {
@@ -97,6 +102,46 @@ export default Vue.extend({
             const controller = new EmployeeController();
             const response = await controller.findEmployee(payload);
             this.employee = response.entity!;
+        },
+        generatePdf() {
+            this.document = {
+                content: [
+                    {
+                        style: "tableExample",
+                        table: {
+                            widths: [
+                                '*', '*','*','*'
+                            ],
+                            body: [["Nombre", "Apellido Materno", "Apellido Paterno", "Correo"]],
+                        },
+                    },
+                ],
+                styles: {
+                    tableExample: {
+                        margin: [0, 5, 0, 15],
+                    }
+                }
+            }
+            for (let index = 0; index < this.employees.length; index++) {
+                const element = this.employees[index];
+
+                const employee: SaveEmployeeDto = {
+                    name: element.name,
+                    surname: element.surname,
+                    lastname: element.lastname,
+                    email: element.email
+                }
+                this.document.content[0].table.body.push([
+                    { text: `${employee.name}`},
+                    { text: `${employee.surname}`},
+                    { text: `${employee.lastname}`},
+                    { text: `${employee.email}`},
+                ]);
+            }
+            console.table(this.document)
+            
+            pdfMake.createPdf(this.document).download('Reporte')
+            this.document = null
         }
     },
     mounted() {
